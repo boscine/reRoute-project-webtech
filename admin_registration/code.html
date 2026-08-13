@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Reroute - Admin Registration </title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#eceef0",
+                        "on-error-container": "#93000a",
+                        "background": "#f7f9fb",
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed": "#00174b",
+                        "secondary": "#0051d5",
+                        "surface": "#f7f9fb",
+                        "on-secondary-container": "#fefcff",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "secondary-fixed-dim": "#b4c5ff",
+                        "outline": "#76777d",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-high": "#e6e8ea",
+                        "on-surface": "#191c1e",
+                        "tertiary": "#000000",
+                        "primary": "#000000",
+                        "on-tertiary-fixed": "#0b1c30",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#e0e3e5",
+                        "secondary-container": "#316bf3",
+                        "on-surface-variant": "#45464d",
+                        "secondary-fixed": "#dbe1ff",
+                        "primary-fixed": "#dae2fd",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-primary": "#ffffff",
+                        "outline-variant": "#c6c6cd",
+                        "inverse-primary": "#bec6e0",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "inverse-on-surface": "#eff1f3",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-dim": "#d8dadc",
+                        "surface-tint": "#565e74",
+                        "inverse-surface": "#2d3133",
+                        "surface-container-low": "#f2f4f6",
+                        "on-background": "#191c1e",
+                        "tertiary-container": "#0b1c30",
+                        "surface-bright": "#f7f9fb",
+                        "on-secondary-fixed-variant": "#003ea8",
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#d3e4fe",
+                        "on-primary-fixed": "#131b2e",
+                        "on-primary-container": "#7c839b",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#131b2e",
+                        "on-tertiary-container": "#75859d",
+                        "surface-container-highest": "#e0e3e5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sm": "1rem",
+                        "md": "1.5rem",
+                        "margin-mobile": "1rem",
+                        "margin-desktop": "2.5rem",
+                        "xl": "4rem",
+                        "lg": "2.5rem",
+                        "base": "4px",
+                        "gutter": "1.5rem",
+                        "xs": "0.5rem"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-sm": ["18px", { "lineHeight": "28px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface-container-highest min-h-screen flex items-center justify-center p-margin-mobile md:p-margin-desktop font-body-lg text-on-surface">
+<div class="w-full max-w-[440px]" id="app">
+<div class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-variant p-xl flex flex-col gap-lg">
+<div class="text-center">
+<h1 class="font-display-lg text-display-lg text-primary mb-xs">Reroute - Admin Registration</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Create your administrator account</p>
+</div>
+<form @submit.prevent="handleSubmit" class="flex flex-col gap-md">
+<div class="bg-error-container text-on-error-container p-sm rounded-lg font-body-md text-body-md flex items-center gap-xs" v-if="globalError">
+<span class="material-symbols-outlined text-[20px]">error</span>
+                    {{ globalError }}
+                </div>
+<div class="bg-primary-fixed text-on-primary-fixed p-sm rounded-lg font-body-md text-body-md flex items-center gap-xs" v-if="successMessage">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+                    {{ successMessage }}
+                </div>
+<div class="flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface-variant" for="name">Full Name</label>
+<input :class="{'border-error focus:border-error focus:ring-error': errors.name}" :disabled="isLoading" class="w-full rounded-lg border-surface-variant bg-surface-container-lowest px-sm py-xs font-body-md text-body-md text-on-surface focus:border-secondary focus:ring-1 focus:ring-secondary disabled:opacity-50 transition-colors" id="name" placeholder="Jane Doe" type="text" v-model="form.name"/>
+<span class="font-label-sm text-label-sm text-error" v-if="errors.name">{{ errors.name }}</span>
+</div>
+<div class="flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface-variant" for="email">Email Address</label>
+<input :class="{'border-error focus:border-error focus:ring-error': errors.email}" :disabled="isLoading" class="w-full rounded-lg border-surface-variant bg-surface-container-lowest px-sm py-xs font-body-md text-body-md text-on-surface focus:border-secondary focus:ring-1 focus:ring-secondary disabled:opacity-50 transition-colors" id="email" placeholder="jane@university.edu" type="email" v-model="form.email"/>
+<span class="font-label-sm text-label-sm text-error" v-if="errors.email">{{ errors.email }}</span>
+</div>
+<div class="flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface-variant" for="password">Password</label>
+<input :class="{'border-error focus:border-error focus:ring-error': errors.password}" :disabled="isLoading" class="w-full rounded-lg border-surface-variant bg-surface-container-lowest px-sm py-xs font-body-md text-body-md text-on-surface focus:border-secondary focus:ring-1 focus:ring-secondary disabled:opacity-50 transition-colors" id="password" placeholder="••••••••" type="password" v-model="form.password"/>
+<span class="font-label-sm text-label-sm text-error" v-if="errors.password">{{ errors.password }}</span>
+</div>
+<div class="flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface-variant" for="confirmPassword">Confirm Password</label>
+<input :class="{'border-error focus:border-error focus:ring-error': errors.confirmPassword}" :disabled="isLoading" class="w-full rounded-lg border-surface-variant bg-surface-container-lowest px-sm py-xs font-body-md text-body-md text-on-surface focus:border-secondary focus:ring-1 focus:ring-secondary disabled:opacity-50 transition-colors" id="confirmPassword" placeholder="••••••••" type="password" v-model="form.confirmPassword"/>
+<span class="font-label-sm text-label-sm text-error" v-if="errors.confirmPassword">{{ errors.confirmPassword }}</span>
+</div>
+<div class="flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface-variant" for="inviteCode">Admin Invite Code</label>
+<input :class="{'border-error focus:border-error focus:ring-error': errors.inviteCode}" :disabled="isLoading" class="w-full rounded-lg border-surface-variant bg-surface-container-lowest px-sm py-xs font-body-md text-body-md text-on-surface focus:border-secondary focus:ring-1 focus:ring-secondary disabled:opacity-50 transition-colors" id="inviteCode" placeholder="CR-XXXX-XXXX" type="text" v-model="form.inviteCode"/>
+<span class="font-label-sm text-label-sm text-error" v-if="errors.inviteCode">{{ errors.inviteCode }}</span>
+</div>
+<button :disabled="isLoading" class="w-full bg-secondary hover:bg-on-secondary-fixed-variant text-on-secondary font-headline-sm text-headline-sm py-sm rounded-lg flex items-center justify-center gap-xs transition-colors mt-xs disabled:opacity-70 disabled:cursor-not-allowed" type="submit">
+<span class="material-symbols-outlined animate-spin text-[20px]" v-if="isLoading">progress_activity</span>
+                    {{ isLoading ? 'Creating Account...' : 'Create account' }}
+                </button>
+</form>
+<div class="text-center font-body-md text-body-md text-on-surface-variant border-t border-surface-variant pt-md">
+                Already have an account? <a class="text-secondary hover:underline font-headline-sm text-headline-sm font-semibold" href="#">Sign in</a>
+</div>
+</div>
+</div>
+<script>
+        const { createApp, ref, reactive } = Vue
+
+        createApp({
+            setup() {
+                const isLoading = ref(false)
+                const globalError = ref('')
+                const successMessage = ref('')
+                
+                const form = reactive({
+                    name: '',
+                    email: '',
+                    password: '',
+                    confirmPassword: '',
+                    inviteCode: ''
+                })
+
+                const errors = reactive({
+                    name: '',
+                    email: '',
+                    password: '',
+                    confirmPassword: '',
+                    inviteCode: ''
+                })
+
+                const validateEmail = (email) => {
+                    return String(email)
+                        .toLowerCase()
+                        .match(
+                            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                        )
+                }
+
+                const clearErrors = () => {
+                    Object.keys(errors).forEach(key => errors[key] = '')
+                    globalError.value = ''
+                    successMessage.value = ''
+                }
+
+                const validateForm = () => {
+                    let isValid = true
+                    clearErrors()
+
+                    if (!form.name.trim()) {
+                        errors.name = 'Name is required'
+                        isValid = false
+                    }
+
+                    if (!form.email.trim()) {
+                        errors.email = 'Email is required'
+                        isValid = false
+                    } else if (!validateEmail(form.email)) {
+                        errors.email = 'Invalid email format'
+                        isValid = false
+                    }
+
+                    if (!form.password) {
+                        errors.password = 'Password is required'
+                        isValid = false
+                    } else if (form.password.length < 8) {
+                        errors.password = 'Password must be at least 8 characters'
+                        isValid = false
+                    }
+
+                    if (form.password !== form.confirmPassword) {
+                        errors.confirmPassword = 'Passwords do not match'
+                        isValid = false
+                    }
+
+                    if (!form.inviteCode.trim()) {
+                        errors.inviteCode = 'Invite code is required'
+                        isValid = false
+                    }
+
+                    return isValid
+                }
+
+                const mockRegister = () => {
+                    return new Promise((resolve, reject) => {
+                        setTimeout(() => {
+                            const random = Math.random()
+                            if (random < 0.3) {
+                                reject(new Error('email already registered'))
+                            } else if (random < 0.6) {
+                                reject(new Error('invalid invite code'))
+                            } else {
+                                resolve()
+                            }
+                        }, 800)
+                    })
+                }
+
+                const handleSubmit = async () => {
+                    if (!validateForm()) return
+
+                    isLoading.value = true
+                    
+                    try {
+                        await mockRegister()
+                        successMessage.value = 'Account created successfully. Redirecting...'
+                        // Mock redirect
+                        setTimeout(() => {
+                            console.log('Redirecting to /admin/dashboard')
+                        }, 1000)
+                    } catch (error) {
+                        if (error.message === 'email already registered') {
+                            errors.email = 'This email is already registered'
+                        } else if (error.message === 'invalid invite code') {
+                            errors.inviteCode = 'Invalid invite code'
+                        } else {
+                            globalError.value = 'An unexpected error occurred. Please try again.'
+                        }
+                    } finally {
+                        isLoading.value = false
+                    }
+                }
+
+                return {
+                    form,
+                    errors,
+                    isLoading,
+                    globalError,
+                    successMessage,
+                    handleSubmit
+                }
+            }
+        }).mount('#app')
+    </script>
+</body></html>
