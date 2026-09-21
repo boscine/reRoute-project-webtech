@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', sans-serif;
+    background-color: #f7f9fb;
+    color: #191c1e;
+  }
+}
+
+@layer components {
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    font-family: 'Material Symbols Outlined';
+    font-style: normal;
+    font-weight: normal;
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+    user-select: none;
+  }
+
+  .input-base {
+    @apply w-full px-sm py-xs border rounded-lg bg-surface-container-lowest font-sans text-body-md
+           transition-colors outline-none border-outline-variant
+           focus:border-secondary focus:ring-1 focus:ring-secondary text-on-surface
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .input-error {
+    @apply border-error focus:border-error focus:ring-error;
+  }
+
+  .btn-primary {
+    @apply w-full flex items-center justify-center gap-xs py-xs px-sm
+           bg-secondary text-on-secondary font-sans text-label-md font-semibold
+           rounded-lg transition-colors h-12
+           hover:bg-on-secondary-fixed-variant
+           focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary
+           disabled:opacity-70 disabled:cursor-not-allowed;
+  }
+
+  .auth-card {
+    @apply bg-surface-container-lowest border border-outline-variant rounded-xl p-8 shadow-sm;
+  }
+
+  .form-label {
+    @apply block font-sans text-label-md text-on-surface-variant mb-base;
+  }
+
+  .field-error {
+    @apply mt-1 text-label-sm text-error font-sans;
+  }
+}

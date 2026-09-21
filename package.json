@@ -1,0 +1,24 @@
+{
+  "name": "reroute",
+  "version": "1.0.0",
+  "description": "ReRoute Campus Network Admin Platform — Vue 3 (Auth) + React (Dashboard) + Express/MongoDB (Backend)",
+  "private": true,
+  "workspaces": [
+    "reroute-auth",
+    "reroute-dashboard",
+    "reroute-backend"
+  ],
+  "scripts": {
+    "auth": "npm run dev --workspace=reroute-auth",
+    "dashboard": "npm run dev --workspace=reroute-dashboard",
+    "backend": "npm run dev --workspace=reroute-backend",
+    "seed": "npm run seed --workspace=reroute-backend",
+    "dev": "concurrently \"npm run backend\" \"npm run auth\" \"npm run dashboard\"",
+    "build:auth": "npm run build --workspace=reroute-auth",
+    "build:dashboard": "npm run build --workspace=reroute-dashboard",
+    "build": "npm run build:auth && npm run build:dashboard"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
