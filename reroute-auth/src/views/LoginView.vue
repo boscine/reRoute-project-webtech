@@ -50,7 +50,8 @@ async function handleLogin() {
 
   isLoading.value = true
   try {
-    const res = await fetch('http://localhost:3000/api/auth/login', {
+    const host = window.location.hostname || 'localhost'
+    const res = await fetch(`http://${host}:3000/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -62,8 +63,8 @@ async function handleLogin() {
     if (!res.ok) {
       globalError.value = data.error || 'The email or password you entered is incorrect.'
     } else {
-      // Redirect to React dashboard on success (default vite port 5174 or 5173)
-      window.location.href = 'http://localhost:5174/'
+      // Redirect to React dashboard on success
+      window.location.href = `http://${host}:5174/`
     }
   } catch {
     globalError.value = 'Failed to reach campus auth server. Ensure backend is running on port 3000.'

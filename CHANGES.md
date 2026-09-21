@@ -97,19 +97,33 @@ ReRoute/
 
 ---
 
+### 🌐 Home Network / LAN Testing Guide
+
+Your local Wi-Fi IP address is detected as: **`192.168.100.14`**
+
+All dev servers and backend APIs are configured with `host: 0.0.0.0` and dynamic hostname resolution. You can open any device connected to the same home Wi-Fi (smartphones, tablets, other laptops) and navigate to:
+
+| App | Local URL (This PC) | Home Wi-Fi URL (Any Device on LAN) |
+|---|---|---|
+| **Vue Auth App (Login/Register)** | `http://localhost:5173` | `http://192.168.100.14:5173` |
+| **React Dashboard (Admin Portal)** | `http://localhost:5174` | `http://192.168.100.14:5174` |
+| **Express Backend API** | `http://localhost:3000` | `http://192.168.100.14:3000` |
+
+#### MongoDB Setup for Home Testing
+1. **Free Cloud Database (Recommended)**:
+   - Create a free cluster on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
+   - In `reroute-backend/.env`, set:
+     ```env
+     MONGO_URI=mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/reroute?retryWrites=true&w=majority
+     ```
+2. **Local MongoDB**:
+   - Alternatively, install [MongoDB Community Server](https://www.mongodb.com/try/download/community) on Windows.
+
+---
+
 ### 🚀 Running the Project
 
-#### 1. Start MongoDB
-Ensure MongoDB is running locally on port `27017` (or set `MONGO_URI` in `reroute-backend/.env`).
-
-#### 2. Seed Initial Database Data
-From the root directory:
-```bash
-npm run seed
-```
-*Creates initial Super Admin (`admin@campus.edu` / `password123`), sample invite codes (`CR-CAMPUS-2026`), and campus hardware devices.*
-
-#### 3. Run All Services Concurrently
+#### Run All Services Concurrently
 From the root directory:
 ```bash
 npm run dev

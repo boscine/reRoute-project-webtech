@@ -25,12 +25,28 @@ const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173,http:
 app.use(
   cors({
     origin: (origin, callback) => {
-      // allow requests with no origin (like mobile apps or curl)
+      // Allow requests with no origin (like mobile apps, curl, or server-to-server)
       if (!origin) return callback(null, true);
+
+      // Check explicit allowed origins list
       if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes('*')) {
         return callback(null, true);
       }
-      return callback(new Error('Not allowed by CORS'));
+
+      // Automatically allow any local network origin (192.168.x.x, 10.x.x.x, 172.16-31.x.x, localhost)
+      const url = new URL(origin);
+      const host = url.hostname;
+      if (
+        host === 'localhost' ||
+        host === '127.0.0.1' ||
+        host.startsWith('192.168.') ||
+        host.startsWith('10.') ||
+        /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(host)
+      ) {
+        return callback(null, true);
+      }
+
+      return callback(new Error(`Not allowed by CORS: ${origin}`));
     },
     credentials: true,
   })
@@ -42,54 +58,59 @@ app.use(express.urlencoded({ extended: true }));
 // Campus IP Whitelist Middleware
 app.use(ipWhitelist);
 
-// Connect to MongoDB
-mongoose
-  .connect(MONGO_URI)
-  .then(() => console.log('✅ Connected to MongoDB at', MONGO_URI))
-  .catch(err => {
-    console.warn('⚠️ MongoDB connection warning:', err.message);
-    console.warn('ℹ️ Ensure MongoDB is running locally on port 27017 or provide MONGO_URI in .env');
+const { connectDB } = require('./db');
+
+async function startServer() {
+  const activeMongoUri = await connectDB();
+
+  // Session Configuration
+  const sessionConfig = {
+    secret: process.env.SESSION_SECRET || 'reroute_secret_key_default',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24, // 24 hours
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    },
+  };
+
+  if (activeMongoUri) {
+    try {
+      sessionConfig.store = MongoStore.create({
+        mongoUrl: activeMongoUri,
+        collectionName: 'sessions',
+        ttl: 24 * 60 * 60,
+      });
+    } catch (e) {
+      console.warn('⚠️ Falling back to default memory session store');
+    }
+  }
+
+  app.use(session(sessionConfig));
+
+  // API Routes
+  app.use('/api/auth', authRoutes);
+  app.use('/api/admins', adminRoutes);
+  app.use('/api/network', networkRoutes);
+
+  // Health check endpoint
+  app.get('/api/health', (req, res) => {
+    res.json({
+      status: 'ok',
+      timestamp: new Date(),
+      clientIp: req.clientIp || req.socket.remoteAddress,
+      mongo: activeMongoUri ? 'connected' : 'disconnected'
+    });
   });
 
-// Session Configuration with Mongo Store fallback to MemoryStore if not connected yet
-const sessionConfig = {
-  secret: process.env.SESSION_SECRET || 'reroute_secret_key_default',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    maxAge: 1000 * 60 * 60 * 24, // 24 hours
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-  },
-};
-
-try {
-  sessionConfig.store = MongoStore.create({
-    mongoUrl: MONGO_URI,
-    collectionName: 'sessions',
-    ttl: 24 * 60 * 60,
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 ReRoute API Server running on:`);
+    console.log(`   - Local:   http://localhost:${PORT}`);
+    console.log(`   - Network: http://192.168.100.14:${PORT}`);
+    console.log(`   - Health:  http://localhost:${PORT}/api/health`);
   });
-} catch (e) {
-  console.warn('⚠️ Falling back to default memory session store');
 }
 
-app.use(session(sessionConfig));
-
-// API Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/admins', adminRoutes);
-app.use('/api/network', networkRoutes);
-
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    timestamp: new Date(),
-    clientIp: req.clientIp || req.socket.remoteAddress
-  });
-});
-
-app.listen(PORT, () => {
-  console.log(`🚀 ReRoute API Server running on http://localhost:${PORT}`);
-});
+startServer();

@@ -18,13 +18,26 @@ function ipWhitelist(req, res, next) {
     if (allowed === clientIp || allowed === normalizedIp) return true;
     if (allowed.startsWith('127.') && (normalizedIp.startsWith('127.') || clientIp.includes('127.0.0.1'))) return true;
     if (allowed === '::1' && (clientIp === '::1' || normalizedIp === '1')) return true;
-    // Basic prefix matching for subnet notation like 192.168.1.0/24 -> 192.168.1.
+    // Support CIDR masks (/8, /16, /24)
     if (allowed.includes('/')) {
-      const prefix = allowed.split('/')[0].split('.').slice(0, 3).join('.');
+      const [subnetIp, mask] = allowed.split('/');
+      const octetCount = mask === '8' ? 1 : mask === '16' ? 2 : 3;
+      const prefix = subnetIp.split('.').slice(0, octetCount).join('.') + '.';
       return normalizedIp.startsWith(prefix);
     }
     return false;
   });
+
+  // In development, automatically allow standard private home/campus subnets
+  const isPrivateNetwork =
+    normalizedIp.startsWith('192.168.') ||
+    normalizedIp.startsWith('10.') ||
+    /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(normalizedIp);
+
+  if (process.env.NODE_ENV !== 'production' && isPrivateNetwork) {
+    req.clientIp = normalizedIp;
+    return next();
+  }
 
   if (!isAllowed && process.env.NODE_ENV === 'production') {
     return res.status(403).json({

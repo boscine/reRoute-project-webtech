@@ -15,7 +15,8 @@ export default function Sidebar({ currentAdmin }) {
     } catch (e) {
       console.error(e);
     } finally {
-      window.location.href = 'http://localhost:5173/login';
+      const host = window.location.hostname || 'localhost';
+      window.location.href = `http://${host}:5173/login`;
     }
   };
 

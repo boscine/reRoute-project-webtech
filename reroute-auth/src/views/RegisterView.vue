@@ -89,7 +89,8 @@ async function handleSubmit() {
 
   isLoading.value = true
   try {
-    const res = await fetch('http://localhost:3000/api/auth/register', {
+    const host = window.location.hostname || 'localhost'
+    const res = await fetch(`http://${host}:3000/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
