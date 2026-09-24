@@ -30,19 +30,19 @@ export default defineConfig({
   // Automatically start dev servers if not already running during tests
   webServer: [
     {
-      command: 'npm run dev --workspace=reroute-auth',
+      command: 'npm run dev --workspace=frontend/auth',
       url: 'http://localhost:5173',
       reuseExistingServer: true,
       timeout: 60000,
     },
     {
-      command: 'npm run dev --workspace=reroute-dashboard',
+      command: 'npm run dev --workspace=frontend/dashboard',
       url: 'http://localhost:5174',
       reuseExistingServer: true,
       timeout: 60000,
     },
     {
-      command: 'npm run start --workspace=reroute-backend',
+      command: 'npm run start --workspace=backend',
       url: 'http://localhost:3000/api/health',
       reuseExistingServer: true,
       timeout: 60000,

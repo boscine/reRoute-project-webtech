@@ -1,4 +1,4 @@
-import { colors, fontSize, borderRadius, spacing } from '../reroute-auth/src/design/tokens.js';
+import { colors, fontSize, borderRadius, spacing } from '../auth/src/design/tokens.js';
 
 /** @type {import('tailwindcss').Config} */
 export default {

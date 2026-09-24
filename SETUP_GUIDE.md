@@ -33,9 +33,10 @@ ReRoute/
 │   ├── ui.spec.js             # 10 UI tests
 │   ├── functional.spec.js     # 10 Functional tests
 │   └── helpers.js             # Shared test utilities & login helper
-├── reroute-auth/              # Vue 3 Authentication frontend (Port 5173)
-├── reroute-dashboard/         # React Admin Dashboard frontend (Port 5174)
-└── reroute-backend/           # Express.js REST API & Mongoose models (Port 3000)
+├── frontend/
+│   ├── auth/                  # Vue 3 Authentication frontend (Port 5173)
+│   └── dashboard/             # React Admin Dashboard frontend (Port 5174)
+└── backend/                   # Express.js REST API & Mongoose models (Port 3000)
 ```
 
 ---
@@ -61,7 +62,7 @@ npx playwright install chromium
 
 ## 4. Configure Backend Environment (.env)
 
-Navigate to `reroute-backend/` and verify or create `.env`:
+Navigate to `backend/` and verify or create `.env`:
 
 ```env
 PORT=3000

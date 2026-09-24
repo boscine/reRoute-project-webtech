@@ -5,13 +5,23 @@
 
 ---
 
+## Session: 2026-09-24 — Frontend/Backend Folder Reorganization
+
+### Overview
+- Moved `reroute-auth/` to `frontend/auth/`.
+- Moved `reroute-dashboard/` to `frontend/dashboard/`.
+- Moved `reroute-backend/` to `backend/`.
+- Updated npm workspace paths, root scripts, Playwright server commands, shared Tailwind imports, and setup documentation.
+
+---
+
 ## Session: 2026-09-21 — Full-Stack Architecture (Vue 3 + React + Express + MongoDB)
 
 ### Overview
 Per project requirements, Angular was replaced with a tailored dual-frontend setup paired with a Node.js Express & MongoDB backend:
-1. **Vue 3 + Vite (`reroute-auth/`)**: Handles administrator authentication (Login & Registration with invite codes).
-2. **React + Vite (`reroute-dashboard/`)**: Handles the Admin Portal (Overview Dashboard, Admin Staff Management, Campus Network Infrastructure Telemetry).
-3. **Node.js + Express + MongoDB (`reroute-backend/`)**: REST API server with session cookies, IP whitelist security, and full database persistence.
+1. **Vue 3 + Vite (`frontend/auth/`)**: Handles administrator authentication (Login & Registration with invite codes).
+2. **React + Vite (`frontend/dashboard/`)**: Handles the Admin Portal (Overview Dashboard, Admin Staff Management, Campus Network Infrastructure Telemetry).
+3. **Node.js + Express + MongoDB (`backend/`)**: REST API server with session cookies, IP whitelist security, and full database persistence.
 4. **Core Campus Design System**: Consistent Tailwind CSS styling derived from `core_campus/DESIGN.md` across both frontends.
 
 ---
@@ -32,41 +42,42 @@ ReRoute/
 ├── admin_registration/                  # Legacy static reference
 │   └── code.html
 │
-├── reroute-auth/                        # Frontend 1: Vue 3 + Vite Auth Application (Port 5173)
-│   ├── tailwind.config.js
-│   ├── postcss.config.js
-│   ├── vite.config.js
-│   └── src/
-│       ├── main.js                      # Router and application bootstrap
-│       ├── style.css                    # Tailwind directives & reusable UI classes
-│       ├── design/
-│       │   └── tokens.js                # Core Campus Design tokens (colors, font sizes, spacing)
-│       ├── components/
-│       │   ├── AppInput.vue             # Labelled input with validation & error displays
-│       │   ├── PasswordInput.vue        # Password input with visibility reveal toggle
-│       │   ├── PasswordStrength.vue     # Dynamic 4-stage password strength bar
-│       │   └── AlertBanner.vue          # Status feedback banner (success / error)
-│       └── views/
-│           ├── LoginView.vue            # Admin login connecting to POST /api/auth/login
-│           └── RegisterView.vue         # Invite-code registration connecting to POST /api/auth/register
+├── frontend/
+│   ├── auth/                            # Frontend 1: Vue 3 + Vite Auth Application (Port 5173)
+│   │   ├── tailwind.config.js
+│   │   ├── postcss.config.js
+│   │   ├── vite.config.js
+│   │   └── src/
+│   │       ├── main.js                  # Router and application bootstrap
+│   │       ├── style.css                # Tailwind directives & reusable UI classes
+│   │       ├── design/
+│   │       │   └── tokens.js            # Core Campus Design tokens (colors, font sizes, spacing)
+│   │       ├── components/
+│   │       │   ├── AppInput.vue         # Labelled input with validation & error displays
+│   │       │   ├── PasswordInput.vue    # Password input with visibility reveal toggle
+│   │       │   ├── PasswordStrength.vue # Dynamic 4-stage password strength bar
+│   │       │   └── AlertBanner.vue      # Status feedback banner (success / error)
+│   │       └── views/
+│   │           ├── LoginView.vue        # Admin login connecting to POST /api/auth/login
+│   │           └── RegisterView.vue     # Invite-code registration connecting to POST /api/auth/register
+│   │
+│   └── dashboard/                       # Frontend 2: React + Vite Admin Portal (Port 5174)
+│       ├── tailwind.config.js
+│       ├── postcss.config.js
+│       ├── vite.config.js
+│       └── src/
+│           ├── main.jsx                 # React DOM entry
+│           ├── App.jsx                  # App shell with session check & React Router
+│           ├── index.css                # Global styling & component classes
+│           ├── api.js                   # Axios instance with credentials & session error handling
+│           ├── components/
+│           │   └── Sidebar.jsx          # Navigation sidebar with admin identity & sign out
+│           └── pages/
+│               ├── DashboardPage.jsx    # Stats overview (total admins, active nodes, load telemetry)
+│               ├── AdminsPage.jsx       # Admin account management & invite code generator
+│               └── NetworkPage.jsx      # Campus nodes grid, status toggles, & device registration modal
 │
-├── reroute-dashboard/                   # Frontend 2: React + Vite Admin Portal (Port 5174)
-│   ├── tailwind.config.js
-│   ├── postcss.config.js
-│   ├── vite.config.js
-│   └── src/
-│       ├── main.jsx                     # React DOM entry
-│       ├── App.jsx                      # App shell with session check & React Router
-│       ├── index.css                    # Global styling & component classes
-│       ├── api.js                       # Axios instance with credentials & session error handling
-│       ├── components/
-│       │   └── Sidebar.jsx              # Navigation sidebar with admin identity & sign out
-│       └── pages/
-│           ├── DashboardPage.jsx        # Stats overview (total admins, active nodes, load telemetry)
-│           ├── AdminsPage.jsx           # Admin account management & invite code generator
-│           └── NetworkPage.jsx          # Campus nodes grid, status toggles, & device registration modal
-│
-└── reroute-backend/                     # Backend: Node.js, Express, MongoDB (Port 3000)
+└── backend/                             # Backend: Node.js, Express, MongoDB (Port 3000)
     ├── .env                             # Port, MongoDB URI, session secret, allowed IPs
     ├── .gitignore                       # Ignores env and node_modules
     ├── package.json                     # Backend dependencies & scripts (start, dev, seed)
@@ -112,7 +123,7 @@ All dev servers and backend APIs are configured with `host: 0.0.0.0` and dynamic
 #### MongoDB Setup for Home Testing
 1. **Free Cloud Database (Recommended)**:
    - Create a free cluster on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
-   - In `reroute-backend/.env`, set:
+   - In `backend/.env`, set:
      ```env
      MONGO_URI=mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/reroute?retryWrites=true&w=majority
      ```
@@ -136,6 +147,6 @@ Or start each service individually:
 ---
 
 ### 🧪 Verification
-- `reroute-auth` built cleanly with Vite.
-- `reroute-dashboard` built cleanly with Vite.
+- `frontend/auth/` built cleanly with Vite.
+- `frontend/dashboard/` built cleanly with Vite.
 - Both apps and backend connected to shared API contracts.

@@ -52,7 +52,7 @@ async function connectDB() {
     console.warn('⚠️ MongoDB is not currently connected:', err.message);
     console.log('💡 Quick Setup Options:');
     console.log('   1. Free Cloud DB: Create a free cluster on https://www.mongodb.com/cloud/atlas');
-    console.log('      and paste your URI in reroute-backend/.env:');
+    console.log('      and paste your URI in backend/.env:');
     console.log('      MONGO_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/reroute');
     console.log('   2. Local DB: Install MongoDB Community Server on your PC and run it.');
     return null;
