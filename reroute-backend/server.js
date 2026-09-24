@@ -95,7 +95,11 @@ async function startServer() {
   app.use('/api/admins', adminRoutes);
   app.use('/api/network', networkRoutes);
 
-  // Health check endpoint
+  // Root and Health check endpoints
+  app.get('/', (req, res) => {
+    res.json({ message: 'ReRoute API running', status: 'ok' });
+  });
+
   app.get('/api/health', (req, res) => {
     res.json({
       status: 'ok',

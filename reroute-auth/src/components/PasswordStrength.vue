@@ -14,12 +14,10 @@ const props = defineProps({
 const score = computed(() => {
   const p = props.password
   if (!p) return 0
-  let s = 0
-  if (p.length >= 8)               s++
-  if (p.length >= 12)              s++
-  if (/[A-Z]/.test(p))             s++
-  if (/[0-9]/.test(p))             s++
-  if (/[^A-Za-z0-9]/.test(p))      s++
+  let s = 1
+  if (p.length >= 8) s++
+  if (/[A-Z]/.test(p) && /[0-9]/.test(p)) s++
+  if (/[^A-Za-z0-9]/.test(p)) s++
   return Math.min(s, 4)
 })
 
