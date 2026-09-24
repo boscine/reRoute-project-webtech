@@ -36,7 +36,11 @@ ReRoute/
 ├── frontend/
 │   ├── auth/                  # Vue 3 Authentication frontend (Port 5173)
 │   └── dashboard/             # React Admin Dashboard frontend (Port 5174)
-└── backend/                   # Express.js REST API & Mongoose models (Port 3000)
+├── backend/                   # Express.js REST API & Mongoose models (Port 3000)
+└── docs/
+    ├── CHANGES.md             # Session audit log
+    ├── SETUP_GUIDE.md         # This guide
+    └── design/                # Design system & legacy references
 ```
 
 ---

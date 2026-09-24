@@ -16,6 +16,10 @@ dist-ssr/
 */.env.*
 !*/.env.example
 
+# Test artifacts
+playwright-report/
+test-results/
+
 # Logs
 logs/
 *.log
