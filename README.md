@@ -1,4 +1,4 @@
-# ReRoute — Campus Network Admin Platform
+# ReRoute Campus Network Admin Platform
 
 ReRoute is a full-stack campus network administration platform with a Vue 3 authentication app, a React admin dashboard, and an Express + MongoDB API.
 
@@ -43,7 +43,7 @@ ReRoute/
 - Auth app: http://localhost:5173
 - Dashboard: http://localhost:5174
 
-## Tests
+## for tests
 
 ```bash
 npm test        # Run all Playwright tests
