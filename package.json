@@ -16,7 +16,8 @@
     "build:auth": "npm run build --workspace=frontend/auth",
     "build:dashboard": "npm run build --workspace=frontend/dashboard",
     "build": "npm run build:auth && npm run build:dashboard",
-    "test": "playwright test",
+    "test": "node tools/run-tests.cjs stub",
+    "test:api": "node tools/run-tests.cjs api",
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",
     "test:report": "playwright show-report"

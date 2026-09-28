@@ -6,6 +6,7 @@ const MongoStore = require('connect-mongo');
 const cors = require('cors');
 
 const ipWhitelist = require('./middleware/ipWhitelist');
+const { isAuthBypassEnabled } = require('./middleware/authBypass');
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admins');
 const networkRoutes = require('./routes/network');
@@ -114,6 +115,12 @@ async function startServer() {
     console.log(`   - Local:   http://localhost:${PORT}`);
     console.log(`   - Network: http://192.168.100.14:${PORT}`);
     console.log(`   - Health:  http://localhost:${PORT}/api/health`);
+
+    if (isAuthBypassEnabled()) {
+      console.log('');
+      console.log('⚠️  AUTH BYPASS IS ON — no login required, every caller is the super admin.');
+      console.log('   Set AUTH_BYPASS=false in backend/.env and restart to turn it back off.');
+    }
   });
 }
 

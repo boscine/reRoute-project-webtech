@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Admin = require('../models/Admin');
 const InviteCode = require('../models/InviteCode');
+const { applyBypassSession } = require('../middleware/authBypass');
 
 // POST /api/auth/login
 router.post('/login', async (req, res) => {
@@ -111,7 +112,11 @@ router.post('/logout', (req, res) => {
 // GET /api/auth/me
 router.get('/me', async (req, res) => {
   if (!req.session || !req.session.adminId) {
-    return res.status(401).json({ error: 'Not authenticated.' });
+    // While the dev bypass is on there is no real session to read.
+    const bypassed = await applyBypassSession(req);
+    if (!bypassed) {
+      return res.status(401).json({ error: 'Not authenticated.' });
+    }
   }
 
   const admin = await Admin.findById(req.session.adminId);
