@@ -1,0 +1,17 @@
+{
+  "name": "reroute",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Root test harness for the ReRoute Playwright suite",
+  "scripts": {
+    "test": "node tools/run-tests.cjs stub",
+    "test:api": "node tools/run-tests.cjs api",
+    "test:ui": "node tools/run-tests.cjs stub tests/ui.spec.js",
+    "test:functional": "node tools/run-tests.cjs stub tests/functional.spec.js",
+    "playwright:install": "playwright install chromium"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0"
+  }
+}
