@@ -1,29 +1,25 @@
 {
   "name": "reroute-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Backend API for ReRoute Campus Locator",
+  "main": "src/server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
-    "seed": "node seed.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:seed": "node prisma/seed.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
-    "bcryptjs": "^3.0.3",
-    "connect-mongo": "^6.0.0",
-    "cors": "^2.8.6",
-    "dotenv": "^18.0.1",
-    "express": "^5.2.1",
-    "express-session": "^1.19.0",
-    "mongoose": "^9.10.1",
-    "uuid": "^14.0.2"
+    "@prisma/client": "^6.4.0",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "qrcode": "^1.5.4"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "prisma": "^6.4.0"
   }
 }

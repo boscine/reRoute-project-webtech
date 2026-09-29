@@ -1,0 +1,78 @@
+// Database schema for ReRoute campus locator
+// Datasource provider defaults to postgresql (or sqlite for local testing)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Building {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  floors    Floor[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Floor {
+  id         Int        @id @default(autoincrement())
+  buildingId Int
+  building   Building   @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  label      String
+  order      Int        @default(1)
+  locations  Location[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@unique([buildingId, label])
+}
+
+model Location {
+  id        Int       @id @default(autoincrement())
+  floorId   Int
+  floor     Floor     @relation(fields: [floorId], references: [id], onDelete: Cascade)
+  qrSlug    String    @unique
+  scanLogs  ScanLog[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model ScanLog {
+  id          Int       @id @default(autoincrement())
+  locationId  Int?
+  location    Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  qrSlugRaw   String
+  resolved    Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+}
+
+enum Role {
+  ADMIN
+  SUPERADMIN
+}
+
+model AdminUser {
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  passwordHash String
+  role         Role          @default(ADMIN)
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  activityLogs ActivityLog[]
+}
+
+model ActivityLog {
+  id          Int        @id @default(autoincrement())
+  adminUserId Int?
+  adminUser   AdminUser? @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
+  action      String     // e.g. "CREATE", "UPDATE", "DELETE", "DEACTIVATE", "LOGIN"
+  targetType  String     // e.g. "Building", "Floor", "Location", "AdminUser"
+  targetId    String?
+  details     String?    // JSON summary of change
+  createdAt   DateTime   @default(now())
+}
