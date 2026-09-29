@@ -1,0 +1,49 @@
+Build "ReRoute" — a campus locator web app with a public student side and an
+authenticated admin side.
+
+STACK
+Vue 3 (frontend, both sides) + Laravel (backend/API + auth) + Prisma ORM
+(type-safe data layer) + PostgreSQL (database).
+
+STUDENT SIDE (public, no login)
+- Landing page: reads a `loc` query param from a scanned QR code and shows the
+  matching building + floor as a large text result.
+- If no/unmatched `loc`, show a Building dropdown, then a Floor dropdown
+  (populated from the chosen building), same result display.
+- Bonus: 3D view — the selected building rendered as a stack of floor slabs
+  (three.js), active floor highlighted, auto-rotate + drag to rotate.
+- No accounts, no data entry — read-only against the Locations table.
+
+ADMIN SIDE (behind login)
+- Login (Laravel auth scaffolding). No public registration — admin accounts
+  are seeded/created by another admin.
+- Dashboard: counts of buildings/floors/locations, recent scan activity.
+- CRUD module, 5 pages, full create/read/update/delete on each:
+  1. Buildings
+  2. Floors (belongs to a Building)
+  3. Locations (building + floor + QR id — what the QR codes point to)
+  4. QR Codes (generate/download a QR image per Location, reassign target)
+  5. Scan Logs (read-only: timestamp, location resolved, param used)
+- User Management: list/add/deactivate admin accounts only (not students).
+- Reports & Analytics: most-scanned locations, scans over time (chart).
+- Activity Logs: audit trail of admin actions (who changed what, when).
+
+DATA MODEL (Prisma schema, PostgreSQL)
+- Building(id, name)
+- Floor(id, buildingId, label, order)
+- Location(id, floorId, qrSlug unique)
+- ScanLog(id, locationId nullable, qrSlugRaw, resolved bool, createdAt)
+- AdminUser(id, email, passwordHash, role, createdAt)
+- ActivityLog(id, adminUserId, action, targetType, targetId, createdAt)
+
+API (Laravel, consumed by Vue)
+- Public: GET /api/locations/:qrSlug, GET /api/buildings, GET /api/floors?building=
+- Admin (auth required): full CRUD endpoints for buildings, floors, locations,
+  qr codes, admin users; GET endpoints for scan logs, reports, activity logs.
+- Every public lookup writes a ScanLog row (resolved true/false).
+
+DELIVERABLE
+A working Vue 3 + Laravel + Prisma + PostgreSQL app matching the above, with
+the student side fully public and the admin side gated by login. Seed the
+database with a few sample buildings/floors/locations so the QR flow is
+demoable immediately.
