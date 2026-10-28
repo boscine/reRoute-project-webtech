@@ -3,6 +3,7 @@
     <header class="header">
       <div class="logo">Re<span>Route</span></div>
       <p class="tagline">Campus QR & Wayfinding Locator</p>
+      <h1 class="visually-hidden" aria-label="ReRoute Campus Locator">ReRoute Campus Locator</h1>
     </header>
 
     <div class="card result-card">
@@ -38,7 +39,10 @@
     <div class="card view-card" v-show="selectedBuildingId">
       <div class="view-header">
         <h3>3D Floor View</h3>
-        <span class="view-hint">Drag to rotate • Auto-rotating</span>
+        <div class="view-controls">
+          <span class="view-hint">Drag to rotate • Auto-rotating</span>
+          <button @click="resetView" class="btn-reset">Reset View</button>
+        </div>
       </div>
       <div ref="canvasContainer" class="canvas-container"></div>
     </div>
@@ -177,7 +181,9 @@ function initThree() {
     const deltaX = e.clientX - previousMousePosition.x;
     const deltaY = e.clientY - previousMousePosition.y;
     slabGroup.rotation.y += deltaX * 0.01;
-    slabGroup.rotation.x += deltaY * 0.01;
+    // Clamp tilt so the slabs stay upright (top-facing) and never flip to bottom.
+    const nextRotX = slabGroup.rotation.x + deltaY * 0.01;
+    slabGroup.rotation.x = Math.min(Math.max(nextRotX, -Math.PI / 2 + 0.2), Math.PI / 2 - 0.2);
     previousMousePosition = { x: e.clientX, y: e.clientY };
   });
 
@@ -189,6 +195,12 @@ function initThree() {
     renderer.render(scene, camera);
   };
   animate();
+}
+
+function resetView() {
+  if (!slabGroup) return;
+  slabGroup.rotation.x = 0;
+  slabGroup.rotation.y = 0;
 }
 
 function build3DModel() {
@@ -242,6 +254,15 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   if (animationFrameId) cancelAnimationFrame(animationFrameId);
+  if (renderer) {
+    renderer.dispose();
+  }
+  if (canvasContainer.value && renderer?.domElement) {
+    canvasContainer.value.removeChild(renderer.domElement);
+  }
+  // reset references
+  scene = camera = renderer = slabGroup = null;
+  animationFrameId = null;
 });
 </script>
 
@@ -370,9 +391,29 @@ onBeforeUnmount(() => {
   align-items: center;
 }
 
+.view-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .view-hint {
   font-size: 0.75rem;
   color: #94a3b8;
+}
+
+.btn-reset {
+  background: #e2e8f0;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  color: #475569;
+  cursor: pointer;
+}
+
+.btn-reset:hover {
+  background: #cbd5e1;
 }
 
 .footer {

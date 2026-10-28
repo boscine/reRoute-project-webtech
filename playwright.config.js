@@ -12,29 +12,30 @@ import { defineConfig, devices } from '@playwright/test';
  *      behaviour skip themselves via skipIfStubbed() in tests/helpers.js, so a
  *      green stub run never overstates what was actually verified.
  *
- *   REROUTE_STUB_API=0  (`npm run test:api`) - boots `php artisan serve` against
- *      laravel-backend/database/database.sqlite. This is the only mode that
- *      verifies Sanctum token enforcement, cascade deletes, and the ScanLog
- *      audit trail. Requires `php artisan migrate --seed` to have been run.
+ *   REROUTE_STUB_API=0  (`npm run test:api`) - boots `node src/server.js` in
+ *      backend/ against the real PostgreSQL database. This is the only mode that
+ *      verifies JWT token enforcement, cascade deletes, and the ScanLog audit
+ *      trail. Requires `npm install`, `prisma migrate dev`, and `prisma seed` in
+ *      backend/ to have been run.
  *
  * The frontend is always real in both modes - the stub replaces only the API,
  * so the UI and client-side assertions are genuine either way.
  */
 const STUB_API = process.env.REROUTE_STUB_API !== '0';
 
-// Laravel exposes /up as a health route; the stub mirrors it so the readiness
-// probe below is identical in both modes.
+// Express exposes /api/buildings as a readiness probe; the stub mirrors /up so
+// the readiness probe below is identical in both modes.
 const apiServer = STUB_API
   ? {
-      command: 'node tests/stubs/api-server.js',
+      command: 'node tests/stubs/api-server.cjs',
       url: 'http://localhost:8000/up',
       reuseExistingServer: true,
       timeout: 60000,
     }
   : {
-      command: 'php artisan serve --host=127.0.0.1 --port=8000',
-      cwd: 'laravel-backend',
-      url: 'http://localhost:8000/up',
+      command: 'node src/server.js',
+      cwd: 'backend',
+      url: 'http://localhost:8000/api/buildings',
       reuseExistingServer: true,
       timeout: 120000,
     };

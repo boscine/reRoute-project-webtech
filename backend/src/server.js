@@ -469,13 +469,14 @@ app.delete('/api/admin/locations/:id', authenticateAdmin, async (req, res) => {
 // -------------------------------------------------------------
 // CRUD 4: QR CODES (Image Generation & Reassignment)
 // -------------------------------------------------------------
-app.get('/api/admin/qr/image/:qrSlug', async (req, res) => {
+app.get('/api/admin/qr/image/:qrSlug', authenticateAdmin, async (req, res) => {
   const { qrSlug } = req.params;
   const baseUrl = req.query.baseUrl || 'http://localhost:5173';
   const targetUrl = `${baseUrl}/?loc=${encodeURIComponent(qrSlug)}`;
 
   try {
-    const qrDataUrl = await QRCode.toDataURL(targetUrl, { width: 350, margin: 2 });
+    const svg = await QRCode.toString(targetUrl, { type: 'svg', width: 350, margin: 2 });
+    const qrDataUrl = 'data:image/svg+xml;base64,' + Buffer.from(svg).toString('base64');
     res.json({ qrSlug, targetUrl, dataUrl: qrDataUrl });
   } catch (err) {
     res.status(500).json({ error: 'Could not generate QR code' });
@@ -552,7 +553,7 @@ app.post('/api/admin/users', authenticateAdmin, async (req, res) => {
     });
 
     await logActivity(req.user.id, 'CREATE', 'AdminUser', newUser.id, { email });
-    res.status(201).json({ id: newUser.id, email: newUser.email, role: newUser.role });
+    res.status(201).json({ id: newUser.id, email: newUser.email, role: newUser.role, isActive: newUser.isActive });
   } catch (err) {
     res.status(400).json({ error: 'Failed to create user (email likely taken)' });
   }

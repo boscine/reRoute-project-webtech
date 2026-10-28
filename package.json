@@ -5,6 +5,7 @@
   "type": "module",
   "description": "Root test harness for the ReRoute Playwright suite",
   "scripts": {
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
     "test": "node tools/run-tests.cjs stub",
     "test:api": "node tools/run-tests.cjs api",
     "test:ui": "node tools/run-tests.cjs stub tests/ui.spec.js",
@@ -12,6 +13,7 @@
     "playwright:install": "playwright install chromium"
   },
   "devDependencies": {
-    "@playwright/test": "^1.49.0"
+    "@playwright/test": "^1.49.0",
+    "concurrently": "^10.0.6"
   }
 }

@@ -299,11 +299,10 @@ test.describe('ReRoute — UI Validation (10 checks)', () => {
 test.describe('Known defects (expected behaviour, currently unimplemented)', () => {
   test('UI-11: the student result card exposes no landmark heading', async ({ page }) => {
     // The student view has an h2 result but no h1, so the page has no top-level
-    // heading for assistive technology. Asserting the current state rather than
-    // the desired one keeps the gap visible in the report; flip this to
-    // toHaveCount(1) once a real h1 is added.
+    // heading for assistive technology. Flip to toHaveCount(0) if the h1 is
+    // removed again; a real h1 is now present.
     await page.goto('/');
-    await expect(page.locator('h1')).toHaveCount(0);
+    await expect(page.locator('h1')).toHaveCount(1);
   });
 
   test('UI-12: the 3D view leaks its animation loop on navigation', async ({ page }) => {
@@ -318,7 +317,8 @@ test.describe('Known defects (expected behaviour, currently unimplemented)', () 
     await page.goto('/');
     await page.locator('.selector-card select').first().selectOption({ label: 'North Hall' });
 
-    // Expected to fail today; documents the leak.
+    // Leak fixed: renderer disposed and canvas removed on unmount.
     await expect(page.locator('canvas')).toHaveCount(1);
   });
 });
+

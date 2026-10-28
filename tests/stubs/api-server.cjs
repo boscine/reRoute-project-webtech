@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 
 /**
  * Stub ReRoute API - a dependency-free, in-memory stand-in for the Laravel API.
@@ -172,7 +172,7 @@ function floorPayload(f) {
   const building = db.buildings.find(b => b.id === f.building_id);
   return {
     id: f.id,
-    building_id: f.building_id,
+    buildingId: f.building_id,
     label: f.label,
     order: f.order,
     created_at: f.created_at,
@@ -188,20 +188,20 @@ function locationPayload(l) {
   const building = floor ? db.buildings.find(b => b.id === floor.building_id) : null;
   return {
     id: l.id,
-    floor_id: l.floor_id,
-    qr_slug: l.qr_slug,
-    created_at: l.created_at,
-    updated_at: l.updated_at,
+    floorId: l.floor_id,
+    qrSlug: l.qr_slug,
+    createdAt: l.created_at,
+    updatedAt: l.updated_at,
     floor: floor
       ? {
           id: floor.id,
-          building_id: floor.building_id,
+          buildingId: floor.building_id,
           label: floor.label,
           order: floor.order,
           building: building ? publicBuilding(building) : null,
         }
       : null,
-    scan_logs_count: db.scanLogs.filter(s => s.location_id === l.id).length,
+    _count: { scanLogs: db.scanLogs.filter(s => s.location_id === l.id).length },
   };
 }
 
@@ -212,16 +212,16 @@ function scanLogPayload(s) {
 
   return {
     id: s.id,
-    location_id: s.location_id,
-    qr_slug_raw: s.qr_slug_raw,
+    locationId: s.location_id,
+    qrSlugRaw: s.qr_slug_raw,
     // Cast to a real boolean, matching ScanLog's Eloquent `casts` entry. The
     // stub stores 0/1 internally to mimic SQLite but must not leak that.
     resolved: Boolean(s.resolved),
-    created_at: s.created_at,
+    createdAt: s.created_at,
     location: location
       ? {
           id: location.id,
-          qr_slug: location.qr_slug,
+          qrSlug: location.qr_slug,
           floor: floor
             ? { id: floor.id, label: floor.label, building: building ? publicBuilding(building) : null }
             : null,
@@ -231,7 +231,7 @@ function scanLogPayload(s) {
 }
 
 function buildingPayload(b) {
-  return { ...publicBuilding(b), floors_count: db.floors.filter(f => f.building_id === b.id).length };
+  return { ...publicBuilding(b), _count: { floors: db.floors.filter(f => f.building_id === b.id).length } };
 }
 
 function userPayload(u) {
@@ -240,8 +240,8 @@ function userPayload(u) {
     name: u.name,
     email: u.email,
     role: u.role,
-    is_active: u.is_active,
-    created_at: u.created_at,
+    isActive: u.is_active,
+    createdAt: u.created_at,
   };
 }
 
@@ -445,7 +445,7 @@ function handle(method, path, query, body, authHeader) {
         timelineData: db.scanLogs
           .slice(-200)
           .reverse()
-          .map(s => ({ created_at: s.created_at, resolved: Boolean(s.resolved) })),
+          .map(s => ({ createdAt: s.created_at, resolved: Boolean(s.resolved) })),
       },
     };
   }
@@ -498,7 +498,7 @@ function handle(method, path, query, body, authHeader) {
       const rows = db.floors
         .slice()
         .sort((a, b) => a.building_id - b.building_id || a.order - b.order)
-        .map(f => ({ ...floorPayload(f), locations_count: db.locations.filter(l => l.floor_id === f.id).length }));
+        .map(f => ({ ...floorPayload(f), _count: { locations: db.locations.filter(l => l.floor_id === f.id).length } }));
       return { status: 200, body: rows };
     }
     if (method === 'POST') {
@@ -627,11 +627,11 @@ function handle(method, path, query, body, authHeader) {
           id: a.id,
           user_id: a.user_id,
           action: a.action,
-          target_type: a.target_type,
-          target_id: a.target_id,
+          targetType: a.target_type,
+          targetId: a.target_id,
           details: a.details,
-          created_at: a.created_at,
-          user: user ? { id: user.id, email: user.email, role: user.role } : null,
+          createdAt: a.created_at,
+          adminUser: user ? { id: user.id, email: user.email, role: user.role } : null,
         };
       });
     return { status: 200, body: rows };
@@ -674,7 +674,7 @@ function handle(method, path, query, body, authHeader) {
       if (!target) return { status: 404, body: { message: '' } };
       target.is_active = !target.is_active;
       logActivity(current.id, target.is_active ? 'ACTIVATE' : 'DEACTIVATE', 'AdminUser', id);
-      return { status: 200, body: { id: target.id, is_active: target.is_active } };
+      return { status: 200, body: { id: target.id, isActive: target.is_active } };
     }
   }
 
@@ -726,3 +726,5 @@ server.listen(PORT, HOST, () => {
   console.log(`> ReRoute stub API listening on http://${HOST}:${PORT}`);
   console.log(`> Seeded admin: ${ADMIN_EMAIL} / ${ADMIN_PASSWORD}`);
 });
+
+

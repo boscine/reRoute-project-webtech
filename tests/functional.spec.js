@@ -86,7 +86,7 @@ test.describe('ReRoute — Functional (10 checks)', () => {
 
     const northHall = buildings.find(b => b.name === 'North Hall');
     const floors = await apiBody(page, 'GET', `/floors?building=${northHall.id}`);
-    expect(floors.every(f => f.building_id === northHall.id)).toBe(true);
+    expect(floors.every(f => f.buildingId === northHall.id)).toBe(true);
 
     // Accepting a building *name* as well as an id is a real affordance of the
     // Laravel controller, so it is worth pinning down.
@@ -254,13 +254,13 @@ test.describe('ReRoute — Backend semantics (real API only)', () => {
     expect(after.total).toBe(startTotal + 2);
 
     const [first, second] = after.data;
-    expect(first.qr_slug_raw).toBe('missing-slug-for-audit');
+    expect(first.qrSlugRaw).toBe('missing-slug-for-audit');
     // ScanLog casts `resolved` to a real boolean, so the contract is a bool and
     // not SQLite's raw 0/1.
     expect(first.resolved).toBe(false);
     expect(first.location).toBeNull();
 
-    expect(second.qr_slug_raw).toBe(SEEDED_QR_SLUGS[2]);
+    expect(second.qrSlugRaw).toBe(SEEDED_QR_SLUGS[2]);
     expect(second.resolved).toBe(true);
     expect(second.location.floor.building.name).toBe('Student Hub');
   });
@@ -291,7 +291,7 @@ test.describe('ReRoute — Backend semantics (real API only)', () => {
     await apiError(page, 'GET', `/locations/${slug}`, 404);
 
     const locations = await apiBody(page, 'GET', '/admin/locations');
-    expect(locations.some(l => l.qr_slug === slug)).toBe(false);
+    expect(locations.some(l => l.qrSlug === slug)).toBe(false);
   });
 
   test('API-03: records every admin mutation in the activity log', async ({ page }) => {
@@ -306,11 +306,11 @@ test.describe('ReRoute — Backend semantics (real API only)', () => {
     await apiBody(page, 'DELETE', `/admin/buildings/${building.id}`);
 
     const logs = await apiBody(page, 'GET', '/admin/activity-logs');
-    const mine = logs.filter(l => l.target_type === 'Building' && String(l.target_id) === String(building.id));
+    const mine = logs.filter(l => l.targetType === 'Building' && String(l.targetId) === String(building.id));
 
     // The audit trail must be complete and attributed, newest first.
     expect(mine.map(l => l.action)).toEqual(['DELETE', 'UPDATE', 'CREATE']);
-    expect(mine.every(l => l.user && l.user.email === ADMIN_CREDENTIALS.email)).toBe(true);
+    expect(mine.every(l => l.adminUser && l.adminUser.email === ADMIN_CREDENTIALS.email)).toBe(true);
   });
 
   test('API-04: refuses to deactivate the requesting admin and toggles others', async ({ page }) => {
@@ -322,15 +322,15 @@ test.describe('ReRoute — Backend semantics (real API only)', () => {
 
     const created = await apiBody(page, 'POST', '/admin/users', { email, password: 'password123' });
     expect(created.role).toBe('ADMIN');
-    expect(created.is_active).toBe(true);
+    expect(created.isActive).toBe(true);
 
     // Self-deactivation would lock the last admin out.
     const me = await apiBody(page, 'GET', '/admin/me');
     const err = await apiError(page, 'PATCH', `/admin/users/${me.id}/toggle-active`, 400);
-    expect(err.error).toBe('Cannot deactivate self');
+    expect(err.error).toBe('Cannot deactivate your own account');
 
     const off = await apiBody(page, 'PATCH', `/admin/users/${created.id}/toggle-active`);
-    expect(off.is_active).toBe(false);
+    expect(off.isActive).toBe(false);
 
     // A deactivated account must not be able to log in.
     await page.evaluate(() => localStorage.clear());
